@@ -1,5 +1,15 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+#define OPERATION_MISSING '?'
+
+typedef struct{
+    int a;
+    int b;
+    struct Operation *op;
+} Operation;
+
 
 int main(int argc, char** argv) {
 
@@ -8,11 +18,22 @@ int main(int argc, char** argv) {
     size_t len = 0;
     ssize_t line_size;
 
+    char * value;
+
+    Operation* operations = (Operation *) malloc( sizeof(Operation) );
+
+    int i;
+
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
 
     while ( (line_size = getline(&line, &len, fb)) != -1 ){
-        printf("line length %zu :\n", line_size);
+        while( (value = strtok(line, " ")) != NULL ){
+            if( *value != OPERATION_MISSING ){
+
+            }
+        }
+    
         printf("%s", line);
     }
 
