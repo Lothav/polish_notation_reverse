@@ -7,7 +7,8 @@
 typedef struct{
     int a;
     int b;
-    struct Operation *op;
+    struct Operation *op_a;
+    struct Operation *op_b;
 } Operation;
 
 
@@ -18,9 +19,10 @@ int main(int argc, char** argv) {
     size_t len = 0;
     ssize_t line_size;
 
-    char * value;
+    char * value = NULL;
 
     Operation* operations = (Operation *) malloc( sizeof(Operation) );
+    int actual_ope = 0;
 
     int i;
 
@@ -28,13 +30,15 @@ int main(int argc, char** argv) {
     if ( NULL == fb ) exit(EXIT_FAILURE);
 
     while ( (line_size = getline(&line, &len, fb)) != -1 ){
-        while( (value = strtok(line, " ")) != NULL ){
-            if( *value != OPERATION_MISSING ){
+        while( (value = strtok(NULL == value ? line : NULL, " \n")) != NULL ){
+            if( *value == OPERATION_MISSING ){
 
+            } else {
+                operations = realloc(operations, (1+actual_ope) * sizeof(Operation));
+                operations[actual_ope].a = atoi( value );
+                actual_ope++;
             }
         }
-    
-        printf("%s", line);
     }
 
     fclose(fb);
