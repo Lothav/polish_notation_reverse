@@ -17,13 +17,13 @@ typedef struct{
 
 int recu(Operation * operations, char *str, int * actual_ope){
     if(operations->op_b != NULL && operations->op_a != NULL){
-        return str[(*actual_ope)--] == OPERATION_PLUS ?
+        return str[--(*actual_ope)] == OPERATION_PLUS ?
                (recu((Operation *) operations->op_b, str, actual_ope) + recu((Operation *) operations->op_a, str, actual_ope)) :
                (recu((Operation *) operations->op_b, str, actual_ope) * recu((Operation *) operations->op_a, str, actual_ope));
     }
 
     if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
-        return str[(*actual_ope)--] == OPERATION_PLUS ?
+        return str[--(*actual_ope)] == OPERATION_PLUS ?
                (operations->a + operations->b) :
                (operations->a * operations->b);
     }
@@ -31,13 +31,13 @@ int recu(Operation * operations, char *str, int * actual_ope){
     int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
 
     if(operations->op_b != NULL){
-        return str[(*actual_ope)--] == OPERATION_PLUS ?
+        return str[--(*actual_ope)] == OPERATION_PLUS ?
                (_not_empty + recu((Operation *) operations->op_b, str, actual_ope)) :
                (_not_empty * recu((Operation *) operations->op_b, str, actual_ope));
     }
 
     if(operations->op_a != NULL){
-        return str[(*actual_ope)--] == OPERATION_PLUS ?
+        return str[--(*actual_ope)] == OPERATION_PLUS ?
                (_not_empty + recu((Operation *) operations->op_a, str, actual_ope)) :
                (_not_empty * recu((Operation *) operations->op_a, str, actual_ope));
     }
@@ -142,17 +142,19 @@ int main(int argc, char** argv) {
             }
         }
 
-        line_size = getline(&line, &len, fb);
+        getline(&line, &len, fb);
         int result = atoi(line);
 
-        char str[actual_ope];
+        char str[actual_ope+1];
         int re = 0;
-        for( j = 0; j < (0x2 << actual_ope); j++ ){
+        for( j = 0; j < (0x2 << (actual_ope - 1)); j++ ){
             intToBin(j, str, actual_ope);
             i = actual_ope;
             convertBinToOperators(str, actual_ope);
             re = recu( &operations[ i-1 ], str, &i);
-            printf("%s\t%d\n", str, re);
+            if(result == re){
+                printf("%s\n", str);
+            }
         }
     }
 
