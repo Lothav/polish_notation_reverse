@@ -6,6 +6,7 @@
 #define EMPTY_VALUE -1
 #define G_VALUE -2
 #define OPERATION_MISSING '?'
+#define OPERATION_PLUS '+'
 
 typedef struct{
     int a;
@@ -16,13 +17,13 @@ typedef struct{
 
 int recu(Operation * operations, char *str, int * actual_ope){
     if(operations->op_b != NULL && operations->op_a != NULL){
-        return str[(*actual_ope)--] == '0' ?
+        return str[(*actual_ope)--] == OPERATION_PLUS ?
                (recu((Operation *) operations->op_b, str, actual_ope) + recu((Operation *) operations->op_a, str, actual_ope)) :
                (recu((Operation *) operations->op_b, str, actual_ope) * recu((Operation *) operations->op_a, str, actual_ope));
     }
 
     if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
-        return str[(*actual_ope)--] == '0' ?
+        return str[(*actual_ope)--] == OPERATION_PLUS ?
                (operations->a + operations->b) :
                (operations->a * operations->b);
     }
@@ -30,13 +31,13 @@ int recu(Operation * operations, char *str, int * actual_ope){
     int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
 
     if(operations->op_b != NULL){
-        return str[(*actual_ope)--] == '0' ?
+        return str[(*actual_ope)--] == OPERATION_PLUS ?
                (_not_empty + recu((Operation *) operations->op_b, str, actual_ope)) :
                (_not_empty * recu((Operation *) operations->op_b, str, actual_ope));
     }
 
     if(operations->op_a != NULL){
-        return str[(*actual_ope)--] == '0' ?
+        return str[(*actual_ope)--] == OPERATION_PLUS ?
                (_not_empty + recu((Operation *) operations->op_a, str, actual_ope)) :
                (_not_empty * recu((Operation *) operations->op_a, str, actual_ope));
     }
@@ -46,6 +47,13 @@ int recu(Operation * operations, char *str, int * actual_ope){
 void intToBin(int num, char *str, int actual_ope) {
     int mask = 0x2 << actual_ope - 1;
     while(mask >>= 1) *(str++) = (char) (!!(mask & num) + '0');
+}
+
+void convertBinToOperators(char* str, int length){
+    int i;
+    for(i = 0; i < length; i++){
+        *(str+i) = (char) (*(str+i) == '0' ? '+' : '*');
+    }
 }
 
 int main(int argc, char** argv) {
@@ -142,6 +150,7 @@ int main(int argc, char** argv) {
         for( j = 0; j < (0x2 << actual_ope); j++ ){
             intToBin(j, str, actual_ope);
             i = actual_ope;
+            convertBinToOperators(str, actual_ope);
             re = recu( &operations[ i-1 ], str, &i);
             printf("%s\t%d\n", str, re);
         }
