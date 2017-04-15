@@ -90,7 +90,7 @@ int main(int argc, char** argv) {
                 }
 
                 if( operators[1] == G_VALUE ){
-                    operations[actual_ope].op_b = &operations[actual_ope - 1];
+                    operations[actual_ope].op_b = operations[actual_ope].op_a != NULL ? &operations[actual_ope - 2] : &operations[actual_ope - 1];
                 } else {
                     operations[actual_ope].b = operators[1];
                 }
