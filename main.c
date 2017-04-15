@@ -8,7 +8,7 @@
 #define OPERATION_MISSING '?'
 #define OPERATION_PLUS '+'
 
-typedef struct{
+typedef struct Operation{
     int id;
     int a;
     int b;
@@ -20,8 +20,8 @@ typedef struct{
 int recu(Operation * operations, char *str){
     if(operations->op_b != NULL && operations->op_a != NULL){
         return str[operations->id] == OPERATION_PLUS ?
-               (recu((Operation *) operations->op_b, str) + recu((Operation *) operations->op_a, str)) :
-               (recu((Operation *) operations->op_b, str) * recu((Operation *) operations->op_a, str));
+               (recu(operations->op_b, str) + recu(operations->op_a, str)) :
+               (recu(operations->op_b, str) * recu(operations->op_a, str));
     }
 
     if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
@@ -34,16 +34,15 @@ int recu(Operation * operations, char *str){
 
     if(operations->op_b != NULL){
         return str[operations->id] == OPERATION_PLUS ?
-               (_not_empty + recu((Operation *) operations->op_b, str)) :
-               (_not_empty * recu((Operation *) operations->op_b, str));
+               (_not_empty + recu(operations->op_b, str)) :
+               (_not_empty * recu(operations->op_b, str));
     }
 
     if(operations->op_a != NULL){
         return str[operations->id] == OPERATION_PLUS ?
-               (_not_empty + recu((Operation *) operations->op_a, str)) :
-               (_not_empty * recu((Operation *) operations->op_a, str));
+               (_not_empty + recu(operations->op_a, str)) :
+               (_not_empty * recu(operations->op_a, str));
     }
-
 }
 
 void intToBin(int num, char *str, int actual_ope) {
@@ -71,7 +70,6 @@ int main(int argc, char** argv) {
 
     Operation* operations = (Operation *) malloc( sizeof(Operation) );
     int actual_ope = 0;
-    int group_ope = 0;
 
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
@@ -117,7 +115,6 @@ int main(int argc, char** argv) {
                         operations[test].grouped = 1;
                     }
                 } else {
-                    group_ope++;
                     if( operators[0] == G_VALUE ){
                         operations[actual_ope].op_a = &operations[actual_ope-1];
                         operations[actual_ope-1].grouped = 1;
@@ -132,7 +129,6 @@ int main(int argc, char** argv) {
                         operations[actual_ope].b = operators[1];
                     }
 
-                    //group_ope -= operators[1] == G_VALUE || operators[0] == G_VALUE;
                 }
 
                 actual_ope++;
@@ -170,7 +166,7 @@ int main(int argc, char** argv) {
             convertBinToOperators(str, actual_ope);
             re = recu( &operations[ actual_ope-1 ], str);
             if(result == re){
-                printf("%s\t%d\n", str, re);
+                printf("%s\n", str);
             }
         }
     }
