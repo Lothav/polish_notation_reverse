@@ -3,7 +3,8 @@
 #include <string.h>
 
 #define EMPTY_CHAR 'E'
-#define G_VALUE '-2'
+#define EMPTY_VALUE -1
+#define G_VALUE -2
 #define OPERATION_MISSING '?'
 
 typedef struct{
@@ -34,7 +35,7 @@ int main(int argc, char** argv) {
 
     int i = 0, j = 0, k = 0;
     while ( -1 != (line_size = getline(&line, &len, fb))){
-
+        int l = 0;
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
 
             if( EMPTY_CHAR  == *value ) {
@@ -54,10 +55,25 @@ int main(int argc, char** argv) {
                 }
 
                 operations = realloc(operations, (1+actual_ope) * sizeof(Operation));
-                operations[actual_ope].a = operators[0];
-                operations[actual_ope].b = operators[1];
+
+                operations[actual_ope].a = EMPTY_VALUE;
+                operations[actual_ope].b = EMPTY_VALUE;
                 operations[actual_ope].op_a = NULL;
                 operations[actual_ope].op_b = NULL;
+
+                if(operators[0] == G_VALUE){
+                    operations[actual_ope].op_a = &operations[actual_ope-1];
+                } else {
+                    operations[actual_ope].a = operators[0];
+                }
+
+                if(operators[1] == G_VALUE){
+                    operations[actual_ope].op_b = &operations[actual_ope-1];
+                } else {
+                    operations[actual_ope].b = operators[1];
+                }
+
+                actual_ope++;
 
                 line[j] = 'G';
 
@@ -75,8 +91,9 @@ int main(int argc, char** argv) {
                 i = 0;
                 value = NULL;
             } else {
-                operators[i % 2] = *value == 'G' ? G_VALUE : atoi(value);
+                operators[l % 2] = *value == 'G' ? G_VALUE : atoi(value);
                 i += strlen(value)+1;
+                l++;
             }
         }
     }
