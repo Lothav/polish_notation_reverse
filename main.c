@@ -9,21 +9,22 @@
 #define OPERATION_PLUS '+'
 
 typedef struct{
+    int id;
     int a;
     int b;
     struct Operation *op_a;
     struct Operation *op_b;
 } Operation;
 
-int recu(Operation * operations, char *str, int * actual_ope){
+int recu(Operation * operations, char *str){
     if(operations->op_b != NULL && operations->op_a != NULL){
-        return str[--(*actual_ope)] == OPERATION_PLUS ?
-               (recu((Operation *) operations->op_b, str, actual_ope) + recu((Operation *) operations->op_a, str, actual_ope)) :
-               (recu((Operation *) operations->op_b, str, actual_ope) * recu((Operation *) operations->op_a, str, actual_ope));
+        return str[operations->id] == OPERATION_PLUS ?
+               (recu((Operation *) operations->op_b, str) + recu((Operation *) operations->op_a, str)) :
+               (recu((Operation *) operations->op_b, str) * recu((Operation *) operations->op_a, str));
     }
 
     if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
-        return str[--(*actual_ope)] == OPERATION_PLUS ?
+        return str[operations->id] == OPERATION_PLUS ?
                (operations->a + operations->b) :
                (operations->a * operations->b);
     }
@@ -31,15 +32,15 @@ int recu(Operation * operations, char *str, int * actual_ope){
     int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
 
     if(operations->op_b != NULL){
-        return str[--(*actual_ope)] == OPERATION_PLUS ?
-               (_not_empty + recu((Operation *) operations->op_b, str, actual_ope)) :
-               (_not_empty * recu((Operation *) operations->op_b, str, actual_ope));
+        return str[operations->id] == OPERATION_PLUS ?
+               (_not_empty + recu((Operation *) operations->op_b, str)) :
+               (_not_empty * recu((Operation *) operations->op_b, str));
     }
 
     if(operations->op_a != NULL){
-        return str[--(*actual_ope)] == OPERATION_PLUS ?
-               (_not_empty + recu((Operation *) operations->op_a, str, actual_ope)) :
-               (_not_empty * recu((Operation *) operations->op_a, str, actual_ope));
+        return str[operations->id] == OPERATION_PLUS ?
+               (_not_empty + recu((Operation *) operations->op_a, str)) :
+               (_not_empty * recu((Operation *) operations->op_a, str));
     }
 
 }
@@ -74,7 +75,7 @@ int main(int argc, char** argv) {
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
 
-    int i = 0, j = 0, k = 0;
+    int i = 0, j = 0, k = 0, id = 0;
     while ( -1 != (line_size = getline(&line, &len, fb))){
         int l = 0;
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
@@ -97,6 +98,7 @@ int main(int argc, char** argv) {
 
                 operations = realloc(operations, (1 + actual_ope) * sizeof(Operation));
 
+                operations[actual_ope].id = id++;
                 operations[actual_ope].a = EMPTY_VALUE;
                 operations[actual_ope].b = EMPTY_VALUE;
                 operations[actual_ope].op_a = NULL;
@@ -107,7 +109,6 @@ int main(int argc, char** argv) {
                     operations[actual_ope].op_b = &operations[(--group_ope)-1];
                 } else {
                     group_ope++;
-
                     if( operators[0] == G_VALUE ){
                         operations[actual_ope].op_a = &operations[actual_ope-1];
                     } else {
@@ -119,6 +120,8 @@ int main(int argc, char** argv) {
                     } else {
                         operations[actual_ope].b = operators[1];
                     }
+
+                    group_ope -= operators[1] == G_VALUE || operators[0] == G_VALUE;
                 }
 
                 actual_ope++;
@@ -129,7 +132,11 @@ int main(int argc, char** argv) {
                 while( j && i >= 0 ){
                     if( line[ i ] != ' ' && line[ i ] != EMPTY_CHAR ){
                         if(line[ i+1 ] == ' ') j--;
-                        line[i] = EMPTY_CHAR;
+                        int t = i;
+                        while(line[t] != ' ' && t >= 0){
+                            line[t] = EMPTY_CHAR;
+                            t--;
+                        }
                     }
                     i--;
                 }
@@ -149,11 +156,10 @@ int main(int argc, char** argv) {
         int re = 0;
         for( j = 0; j < (0x2 << (actual_ope - 1)); j++ ){
             intToBin(j, str, actual_ope);
-            i = actual_ope;
             convertBinToOperators(str, actual_ope);
-            re = recu( &operations[ i-1 ], str, &i);
+            re = recu( &operations[ actual_ope-1 ], str);
             if(result == re){
-                printf("%s\n", str);
+                printf("%s\t%d\n", str, re);
             }
         }
     }
