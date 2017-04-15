@@ -13,35 +13,35 @@ typedef struct Operation{
     int a;
     int b;
     int grouped;
-    struct Operation *op_a;
-    struct Operation *op_b;
+    int op_a;
+    int op_b;
 } Operation;
 
-int recu(Operation * operations, char *str){
-    if(operations->op_b != NULL && operations->op_a != NULL){
-        return str[operations->id] == OPERATION_PLUS ?
-               (recu(operations->op_b, str) + recu(operations->op_a, str)) :
-               (recu(operations->op_b, str) * recu(operations->op_a, str));
+int recu(Operation * operations, int index, char *str){
+    if(operations[index].op_b != EMPTY_VALUE && operations[index].op_a != EMPTY_VALUE){
+        return str[operations[index].id] == OPERATION_PLUS ?
+               (recu(operations, operations[index].op_b, str) + recu(operations, operations[index].op_a, str)) :
+               (recu(operations, operations[index].op_b, str) * recu(operations, operations[index].op_a, str));
     }
 
-    if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
-        return str[operations->id] == OPERATION_PLUS ?
-               (operations->a + operations->b) :
-               (operations->a * operations->b);
+    if(operations[index].a != EMPTY_VALUE && operations[index].b != EMPTY_VALUE){
+        return str[operations[index].id] == OPERATION_PLUS ?
+               (operations[index].a + operations[index].b) :
+               (operations[index].a * operations[index].b);
     }
 
-    int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
+    int _not_empty = (operations[index].a == EMPTY_VALUE ? operations[index].b : operations[index].a);
 
-    if(operations->op_b != NULL){
-        return str[operations->id] == OPERATION_PLUS ?
-               (_not_empty + recu(operations->op_b, str)) :
-               (_not_empty * recu(operations->op_b, str));
+    if(operations[index].op_b != EMPTY_VALUE){
+        return str[operations[index].id] == OPERATION_PLUS ?
+               (_not_empty + recu(operations, operations[index].op_b, str)) :
+               (_not_empty * recu(operations, operations[index].op_b, str));
     }
 
-    if(operations->op_a != NULL){
-        return str[operations->id] == OPERATION_PLUS ?
-               (_not_empty + recu(operations->op_a, str)) :
-               (_not_empty * recu(operations->op_a, str));
+    if(operations[index].op_a != EMPTY_VALUE){
+        return str[operations[index].id] == OPERATION_PLUS ?
+               (_not_empty + recu(operations, operations[index].op_a, str)) :
+               (_not_empty * recu(operations, operations[index].op_a, str));
     }
 }
 
@@ -59,28 +59,30 @@ void convertBinToOperators(char* str, int length){
 
 int main(int argc, char** argv) {
 
-    FILE* fb;
+    FILE* fb = NULL;
     char* line = NULL;
     size_t len = 0;
-    ssize_t line_size;
+    ssize_t line_size = 0;
 
     char * value = NULL;
 
-    int operators[2];
+    int * operators = (int *) malloc(2 * sizeof(int));
 
-    Operation* operations = (Operation *) malloc( sizeof(Operation) );
+    Operation* operations = NULL;
     int actual_ope = 0;
 
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
 
     int i = 0, j = 0, k = 0, id = 0;
-    while ( -1 != (line_size = getline(&line, &len, fb))){
+
+
+    if ( -1 != (line_size = getline(&line, &len, fb))){
         int l = 0;
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
 
             if( EMPTY_CHAR  == *value ) {
-                i += strlen(value)+1;
+                i += 2;
                 continue;
             }
 
@@ -101,34 +103,34 @@ int main(int argc, char** argv) {
                 operations[actual_ope].a = EMPTY_VALUE;
                 operations[actual_ope].b = EMPTY_VALUE;
                 operations[actual_ope].grouped = 0;
-                operations[actual_ope].op_a = NULL;
-                operations[actual_ope].op_b = NULL;
+                operations[actual_ope].op_a = EMPTY_VALUE;
+                operations[actual_ope].op_b = EMPTY_VALUE;
 
                 if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
-                    operations[actual_ope].op_a = &operations[actual_ope-1];
+                    operations[actual_ope].op_a = actual_ope-1;
+                    operations[actual_ope-1].grouped = 1;
                     int test = actual_ope-2;
                     while(operations[test].grouped){
                         test--;
                     }
                     if(!operations[test].grouped){
-                        operations[actual_ope].op_b = &operations[test];
+                        operations[actual_ope].op_b = test;
                         operations[test].grouped = 1;
                     }
                 } else {
                     if( operators[0] == G_VALUE ){
-                        operations[actual_ope].op_a = &operations[actual_ope-1];
+                        operations[actual_ope].op_a = actual_ope-1;
                         operations[actual_ope-1].grouped = 1;
                     } else {
                         operations[actual_ope].a = operators[0];
                     }
 
                     if( operators[1] == G_VALUE ){
-                        operations[actual_ope].op_b = &operations[actual_ope-1];
+                        operations[actual_ope].op_b = actual_ope-1;
                         operations[actual_ope-1].grouped = 1;
                     } else {
                         operations[actual_ope].b = operators[1];
                     }
-
                 }
 
                 actual_ope++;
@@ -156,25 +158,25 @@ int main(int argc, char** argv) {
             }
         }
 
-        getline(&line, &len, fb);
-        int result = atoi(line);
+        getline( &line, &len, fb );
 
-        char str[actual_ope+1];
-        int re = 0;
+        int result = atoi(line);
+        char *str = (char *) calloc((size_t) (actual_ope + 1), sizeof( char ) );
+
         for( j = 0; j < (0x2 << (actual_ope - 1)); j++ ){
             intToBin(j, str, actual_ope);
             convertBinToOperators(str, actual_ope);
-            re = recu( &operations[ actual_ope-1 ], str);
-            if(result == re){
+            if(result == recu(operations, actual_ope-1, str)){
                 printf("%s\n", str);
             }
         }
+        if(str) free(str);
     }
 
+    if(operators) free(operators);
     fclose(fb);
     if (line) free(line);
     if (operations) free(operations);
-    exit(EXIT_SUCCESS);
 
     return EXIT_SUCCESS;
 }
