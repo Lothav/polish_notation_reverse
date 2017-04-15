@@ -14,24 +14,31 @@ typedef struct{
     struct Operation *op_b;
 } Operation;
 
-int recu(Operation * operations){
-
+int recu(Operation * operations, char *str, int * actual_ope){
     if(operations->op_b != NULL && operations->op_a != NULL){
-        return recu((Operation *) operations->op_b) + recu((Operation *) operations->op_a);
+        return str[(*actual_ope)--] == '0' ?
+               (recu((Operation *) operations->op_b, str, actual_ope) + recu((Operation *) operations->op_a, str, actual_ope)) :
+               (recu((Operation *) operations->op_b, str, actual_ope) * recu((Operation *) operations->op_a, str, actual_ope));
     }
 
     if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
-        return operations->a + operations->b;
+        return str[(*actual_ope)--] == '0' ?
+               (operations->a + operations->b) :
+               (operations->a * operations->b);
     }
 
     int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
 
     if(operations->op_b != NULL){
-        return _not_empty + recu((Operation *) operations->op_b);
+        return str[(*actual_ope)--] == '0' ?
+               (_not_empty + recu((Operation *) operations->op_b, str, actual_ope)) :
+               (_not_empty * recu((Operation *) operations->op_b, str, actual_ope));
     }
 
     if(operations->op_a != NULL){
-        return _not_empty + recu((Operation *) operations->op_a);
+        return str[(*actual_ope)--] == '0' ?
+               (_not_empty + recu((Operation *) operations->op_a, str, actual_ope)) :
+               (_not_empty * recu((Operation *) operations->op_a, str, actual_ope));
     }
 
 }
@@ -132,10 +139,10 @@ int main(int argc, char** argv) {
 
         char str[actual_ope];
         int re = 0;
-        for(j = 0; j < (0x2 << actual_ope); j++){
+        for( j = 0; j < (0x2 << actual_ope); j++ ){
             intToBin(j, str, actual_ope);
-
-            re = recu( &operations[ actual_ope-1 ] );
+            i = actual_ope;
+            re = recu( &operations[ i-1 ], str, &i);
             printf("%s\t%d\n", str, re);
         }
     }
