@@ -36,6 +36,10 @@ int recu(Operation * operations){
 
 }
 
+void intToBin(int num, char *str, int actual_ope) {
+    int mask = 0x2 << actual_ope - 1;
+    while(mask >>= 1) *(str++) = (char) (!!(mask & num) + '0');
+}
 
 int main(int argc, char** argv) {
 
@@ -108,9 +112,9 @@ int main(int argc, char** argv) {
                 i--;
                 j = 2;
                 while( j && i >= 0 ){
-                    if( line[ i ] != ' ' && line[ i ] != 'E' ){
+                    if( line[ i ] != ' ' && line[ i ] != EMPTY_CHAR ){
                         if(line[ i+1 ] == ' ') j--;
-                        line[i] = 'E';
+                        line[i] = EMPTY_CHAR;
                     }
                     i--;
                 }
@@ -125,8 +129,15 @@ int main(int argc, char** argv) {
 
         line_size = getline(&line, &len, fb);
         int result = atoi(line);
-        int re = recu( &operations[ actual_ope-1 ] );
-        printf("%d", re);
+
+        char str[actual_ope];
+        int re = 0;
+        for(j = 0; j < (0x2 << actual_ope); j++){
+            intToBin(j, str, actual_ope);
+
+            re = recu( &operations[ actual_ope-1 ] );
+            printf("%s\t%d\n", str, re);
+        }
     }
 
     fclose(fb);
