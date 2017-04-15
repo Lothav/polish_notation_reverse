@@ -14,6 +14,28 @@ typedef struct{
     struct Operation *op_b;
 } Operation;
 
+int recu(Operation * operations){
+
+    if(operations->op_b != NULL && operations->op_a != NULL){
+        return recu((Operation *) operations->op_b) + recu((Operation *) operations->op_a);
+    }
+
+    if(operations->a != EMPTY_VALUE && operations->b != EMPTY_VALUE){
+        return operations->a + operations->b;
+    }
+
+    int _not_empty = (operations->a == EMPTY_VALUE ? operations->b : operations->a);
+
+    if(operations->op_b != NULL){
+        return _not_empty + recu((Operation *) operations->op_b);
+    }
+
+    if(operations->op_a != NULL){
+        return _not_empty + recu((Operation *) operations->op_a);
+    }
+
+}
+
 
 int main(int argc, char** argv) {
 
@@ -46,8 +68,8 @@ int main(int argc, char** argv) {
             if( OPERATION_MISSING  == *value ) {
 
                 j = 0, k = 0;
-                while(k < line_size){
-                    if(line[k] == '\0'){
+                while( k < line_size ){
+                    if( line[k] == '\0' ){
                         line[k] = ' ';
                         j = i;
                     }
@@ -61,14 +83,14 @@ int main(int argc, char** argv) {
                 operations[actual_ope].op_a = NULL;
                 operations[actual_ope].op_b = NULL;
 
-                if(operators[0] == G_VALUE){
-                    operations[actual_ope].op_a = &operations[actual_ope-1];
+                if( operators[0] == G_VALUE ){
+                    operations[actual_ope].op_a = &operations[actual_ope - 1];
                 } else {
                     operations[actual_ope].a = operators[0];
                 }
 
-                if(operators[1] == G_VALUE){
-                    operations[actual_ope].op_b = &operations[actual_ope-1];
+                if( operators[1] == G_VALUE ){
+                    operations[actual_ope].op_b = &operations[actual_ope - 1];
                 } else {
                     operations[actual_ope].b = operators[1];
                 }
@@ -80,7 +102,7 @@ int main(int argc, char** argv) {
                 j = 3;
                 i--;
                 while( j && i >= 0 ){
-                    if(line[i] == ' '){
+                    if( line[ i ] == ' ' ){
                         j--;
                         i--;
                         continue;
@@ -91,11 +113,16 @@ int main(int argc, char** argv) {
                 i = 0;
                 value = NULL;
             } else {
-                operators[l % 2] = *value == 'G' ? G_VALUE : atoi(value);
-                i += strlen(value)+1;
+                operators[l % 2] = * value == 'G' ? G_VALUE : atoi( value );
+                i += strlen(value) + 1;
                 l++;
             }
         }
+
+        line_size = getline(&line, &len, fb);
+        int result = atoi(line);
+        int re = recu(&operations[actual_ope-1]);
+        printf("%d", re);
     }
 
     fclose(fb);
