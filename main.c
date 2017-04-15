@@ -50,7 +50,7 @@ int main(int argc, char** argv) {
 
     Operation* operations = (Operation *) malloc( sizeof(Operation) );
     int actual_ope = 0;
-
+    int group_ope = 0;
 
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
@@ -76,38 +76,42 @@ int main(int argc, char** argv) {
                     k++;
                 }
 
-                operations = realloc(operations, (1+actual_ope) * sizeof(Operation));
+                operations = realloc(operations, (1 + actual_ope) * sizeof(Operation));
 
                 operations[actual_ope].a = EMPTY_VALUE;
                 operations[actual_ope].b = EMPTY_VALUE;
                 operations[actual_ope].op_a = NULL;
                 operations[actual_ope].op_b = NULL;
 
-                if( operators[0] == G_VALUE ){
-                    operations[actual_ope].op_a = &operations[actual_ope - 1];
+                if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
+                    operations[actual_ope].op_a = &operations[actual_ope-1];
+                    operations[actual_ope].op_b = &operations[(--group_ope)-1];
                 } else {
-                    operations[actual_ope].a = operators[0];
-                }
+                    group_ope++;
 
-                if( operators[1] == G_VALUE ){
-                    operations[actual_ope].op_b = operations[actual_ope].op_a != NULL ? &operations[actual_ope - 2] : &operations[actual_ope - 1];
-                } else {
-                    operations[actual_ope].b = operators[1];
+                    if( operators[0] == G_VALUE ){
+                        operations[actual_ope].op_a = &operations[actual_ope-1];
+                    } else {
+                        operations[actual_ope].a = operators[0];
+                    }
+
+                    if( operators[1] == G_VALUE ){
+                        operations[actual_ope].op_b = &operations[actual_ope-1];
+                    } else {
+                        operations[actual_ope].b = operators[1];
+                    }
                 }
 
                 actual_ope++;
-
                 line[j] = 'G';
 
-                j = 3;
                 i--;
+                j = 2;
                 while( j && i >= 0 ){
-                    if( line[ i ] == ' ' ){
-                        j--;
-                        i--;
-                        continue;
+                    if( line[ i ] != ' ' && line[ i ] != 'E' ){
+                        if(line[ i+1 ] == ' ') j--;
+                        line[i] = 'E';
                     }
-                    line[i] = 'E';
                     i--;
                 }
                 i = 0;
@@ -121,7 +125,7 @@ int main(int argc, char** argv) {
 
         line_size = getline(&line, &len, fb);
         int result = atoi(line);
-        int re = recu(&operations[actual_ope-1]);
+        int re = recu( &operations[ actual_ope-1 ] );
         printf("%d", re);
     }
 
