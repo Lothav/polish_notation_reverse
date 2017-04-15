@@ -12,6 +12,7 @@ typedef struct{
     int id;
     int a;
     int b;
+    int grouped;
     struct Operation *op_a;
     struct Operation *op_b;
 } Operation;
@@ -101,27 +102,37 @@ int main(int argc, char** argv) {
                 operations[actual_ope].id = id++;
                 operations[actual_ope].a = EMPTY_VALUE;
                 operations[actual_ope].b = EMPTY_VALUE;
+                operations[actual_ope].grouped = 0;
                 operations[actual_ope].op_a = NULL;
                 operations[actual_ope].op_b = NULL;
 
                 if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
                     operations[actual_ope].op_a = &operations[actual_ope-1];
-                    operations[actual_ope].op_b = &operations[(--group_ope)-1];
+                    int test = actual_ope-2;
+                    while(operations[test].grouped){
+                        test--;
+                    }
+                    if(!operations[test].grouped){
+                        operations[actual_ope].op_b = &operations[test];
+                        operations[test].grouped = 1;
+                    }
                 } else {
                     group_ope++;
                     if( operators[0] == G_VALUE ){
                         operations[actual_ope].op_a = &operations[actual_ope-1];
+                        operations[actual_ope-1].grouped = 1;
                     } else {
                         operations[actual_ope].a = operators[0];
                     }
 
                     if( operators[1] == G_VALUE ){
                         operations[actual_ope].op_b = &operations[actual_ope-1];
+                        operations[actual_ope-1].grouped = 1;
                     } else {
                         operations[actual_ope].b = operators[1];
                     }
 
-                    group_ope -= operators[1] == G_VALUE || operators[0] == G_VALUE;
+                    //group_ope -= operators[1] == G_VALUE || operators[0] == G_VALUE;
                 }
 
                 actual_ope++;
