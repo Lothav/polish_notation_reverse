@@ -21,28 +21,37 @@ int main(int argc, char** argv) {
 
     char * value = NULL;
 
+    int operators[2];
+
     Operation* operations = (Operation *) malloc( sizeof(Operation) );
     int actual_ope = 0;
 
-    int i;
 
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
 
-    while ( (line_size = getline(&line, &len, fb)) != -1 ){
-        while( (value = strtok(NULL == value ? line : NULL, " \n")) != NULL ){
-            if( *value == OPERATION_MISSING ){
+    int i = 0;
+    while ( -1 != (line_size = getline(&line, &len, fb))){
+        while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
 
-            } else {
+            if( OPERATION_MISSING  == *value ) {
                 operations = realloc(operations, (1+actual_ope) * sizeof(Operation));
-                operations[actual_ope].a = atoi( value );
-                actual_ope++;
+                operations[actual_ope].a = operators[0];
+                operations[actual_ope].b = operators[1];
+                operations[actual_ope].op_a = NULL;
+                operations[actual_ope].op_b = NULL;
+
+                i = 0;
+            } else {
+                operators[i % 2] = atoi( value );
+                i++;
             }
         }
     }
 
     fclose(fb);
     if (line) free(line);
+    if (operations) free(operations);
     exit(EXIT_SUCCESS);
 
     return EXIT_SUCCESS;
