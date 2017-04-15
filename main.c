@@ -3,6 +3,7 @@
 #include <string.h>
 
 #define EMPTY_CHAR 'E'
+#define G_VALUE '-2'
 #define OPERATION_MISSING '?'
 
 typedef struct{
@@ -36,10 +37,14 @@ int main(int argc, char** argv) {
 
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
 
-            if( EMPTY_CHAR  == *value ) continue;
+            if( EMPTY_CHAR  == *value ) {
+                i += strlen(value)+1;
+                continue;
+            }
 
             if( OPERATION_MISSING  == *value ) {
 
+                j = 0, k = 0;
                 while(k < line_size){
                     if(line[k] == '\0'){
                         line[k] = ' ';
@@ -70,7 +75,7 @@ int main(int argc, char** argv) {
                 i = 0;
                 value = NULL;
             } else {
-                operators[i % 2] = atoi( value );
+                operators[i % 2] = *value == 'G' ? G_VALUE : atoi(value);
                 i += strlen(value)+1;
             }
         }
