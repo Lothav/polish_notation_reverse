@@ -7,7 +7,7 @@
 
 void recoverString(char* str, int length){
     int k = 0;
-    while( k < length ){
+    while( k < (length-1) ){
         if( str[k] == '\0' ){
             str[k] = ' ';
         }
@@ -16,6 +16,7 @@ void recoverString(char* str, int length){
 }
 
 void setStringBufferWithCustomChars(int *i, char * line){
+    line[*i] = 'G';
     (*i)--;
     int j = 2;
     while( j && (*i) >= 0 ){
