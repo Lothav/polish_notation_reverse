@@ -75,4 +75,5 @@ int calcResultRecursion(Operation * operations, int index, char *str){
                (_not_empty + calcResultRecursion(operations, operations[index].ind_a, str)) :
                (_not_empty * calcResultRecursion(operations, operations[index].ind_a, str));
     }
+    return EMPTY_VALUE;
 }
