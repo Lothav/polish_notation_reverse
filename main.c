@@ -10,18 +10,18 @@
 
 typedef struct Operation{
     int id;
+    int grouped;
     int a;
     int b;
-    int grouped;
-    int op_a;
-    int op_b;
+    int ind_a;
+    int ind_b;
 } Operation;
 
-int recu(Operation * operations, int index, char *str){
-    if(operations[index].op_b != EMPTY_VALUE && operations[index].op_a != EMPTY_VALUE){
+int calcResultRecursion(Operation * operations, int index, char *str){
+    if(operations[index].ind_b != EMPTY_VALUE && operations[index].ind_a != EMPTY_VALUE){
         return str[operations[index].id] == OPERATION_PLUS ?
-               (recu(operations, operations[index].op_b, str) + recu(operations, operations[index].op_a, str)) :
-               (recu(operations, operations[index].op_b, str) * recu(operations, operations[index].op_a, str));
+               (calcResultRecursion(operations, operations[index].ind_b, str) + calcResultRecursion(operations, operations[index].ind_a, str)) :
+               (calcResultRecursion(operations, operations[index].ind_b, str) * calcResultRecursion(operations, operations[index].ind_a, str));
     }
 
     if(operations[index].a != EMPTY_VALUE && operations[index].b != EMPTY_VALUE){
@@ -32,21 +32,21 @@ int recu(Operation * operations, int index, char *str){
 
     int _not_empty = (operations[index].a == EMPTY_VALUE ? operations[index].b : operations[index].a);
 
-    if(operations[index].op_b != EMPTY_VALUE){
+    if(operations[index].ind_b != EMPTY_VALUE){
         return str[operations[index].id] == OPERATION_PLUS ?
-               (_not_empty + recu(operations, operations[index].op_b, str)) :
-               (_not_empty * recu(operations, operations[index].op_b, str));
+               (_not_empty + calcResultRecursion(operations, operations[index].ind_b, str)) :
+               (_not_empty * calcResultRecursion(operations, operations[index].ind_b, str));
     }
 
-    if(operations[index].op_a != EMPTY_VALUE){
+    if(operations[index].ind_a != EMPTY_VALUE){
         return str[operations[index].id] == OPERATION_PLUS ?
-               (_not_empty + recu(operations, operations[index].op_a, str)) :
-               (_not_empty * recu(operations, operations[index].op_a, str));
+               (_not_empty + calcResultRecursion(operations, operations[index].ind_a, str)) :
+               (_not_empty * calcResultRecursion(operations, operations[index].ind_a, str));
     }
 }
 
-void intToBin(int num, char *str, int actual_ope) {
-    int mask = 0x2 << actual_ope - 1;
+void intToBin(int num, char *str, int op_count) {
+    int mask = 0x2 << op_count - 1;
     while(mask >>= 1) *(str++) = (char) (!!(mask & num) + '0');
 }
 
@@ -69,7 +69,7 @@ int main(int argc, char** argv) {
     int * operators = (int *) malloc(2 * sizeof(int));
 
     Operation* operations = NULL;
-    int actual_ope = 0;
+    int op_count = 0;
 
     fb = fopen(argv[1], "r");
     if ( NULL == fb ) exit(EXIT_FAILURE);
@@ -79,8 +79,8 @@ int main(int argc, char** argv) {
 
     if ( -1 != (line_size = getline(&line, &len, fb))){
         int l = 0;
+        line_size -= 2;
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
-
             if( EMPTY_CHAR  == *value ) {
                 i += 2;
                 continue;
@@ -97,52 +97,55 @@ int main(int argc, char** argv) {
                     k++;
                 }
 
-                operations = realloc(operations, (1 + actual_ope) * sizeof(Operation));
+                operations = realloc(operations, (1 + op_count) * sizeof(Operation));
 
-                operations[actual_ope].id = id++;
-                operations[actual_ope].a = EMPTY_VALUE;
-                operations[actual_ope].b = EMPTY_VALUE;
-                operations[actual_ope].grouped = 0;
-                operations[actual_ope].op_a = EMPTY_VALUE;
-                operations[actual_ope].op_b = EMPTY_VALUE;
+                operations[op_count].id = id++;
+                operations[op_count].a = EMPTY_VALUE;
+                operations[op_count].b = EMPTY_VALUE;
+                operations[op_count].grouped = 0;
+                operations[op_count].ind_a = EMPTY_VALUE;
+                operations[op_count].ind_b = EMPTY_VALUE;
 
                 if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
-                    operations[actual_ope].op_a = actual_ope-1;
-                    operations[actual_ope-1].grouped = 1;
-                    int test = actual_ope-2;
-                    while(operations[test].grouped){
-                        test--;
+                    operations[op_count].ind_a = op_count-1;
+                    operations[op_count-1].grouped = 1;
+                    int op_queued = op_count-2;
+                    while( operations[op_queued].grouped ){
+                        op_queued--;
                     }
-                    if(!operations[test].grouped){
-                        operations[actual_ope].op_b = test;
-                        operations[test].grouped = 1;
+                    if( !operations[op_queued].grouped ){
+                        operations[op_count].ind_b = op_queued;
+                        operations[op_queued].grouped = 1;
                     }
                 } else {
                     if( operators[0] == G_VALUE ){
-                        operations[actual_ope].op_a = actual_ope-1;
-                        operations[actual_ope-1].grouped = 1;
+                        operations[op_count].ind_a = op_count-1;
+                        operations[op_count-1].grouped = 1;
                     } else {
-                        operations[actual_ope].a = operators[0];
+                        operations[op_count].a = operators[0];
                     }
 
                     if( operators[1] == G_VALUE ){
-                        operations[actual_ope].op_b = actual_ope-1;
-                        operations[actual_ope-1].grouped = 1;
+                        operations[op_count].ind_b = op_count-1;
+                        operations[op_count-1].grouped = 1;
                     } else {
-                        operations[actual_ope].b = operators[1];
+                        operations[op_count].b = operators[1];
                     }
                 }
+                if( j == line_size ){
+                    break;
+                }
+                op_count++;
 
-                actual_ope++;
                 line[j] = 'G';
 
                 i--;
                 j = 2;
                 while( j && i >= 0 ){
                     if( line[ i ] != ' ' && line[ i ] != EMPTY_CHAR ){
-                        if(line[ i+1 ] == ' ') j--;
+                        if( line[ i+1 ] == ' ' ) j--;
                         int t = i;
-                        while(line[t] != ' ' && t >= 0){
+                        while( line[t] != ' ' && t >= 0 ){
                             line[t] = EMPTY_CHAR;
                             t--;
                         }
@@ -157,26 +160,25 @@ int main(int argc, char** argv) {
                 l++;
             }
         }
-
         getline( &line, &len, fb );
 
         int result = atoi(line);
-        char *str = (char *) calloc((size_t) (actual_ope + 1), sizeof( char ) );
+        char *str = (char *) calloc( (size_t) (op_count + 1), sizeof( char ) );
 
-        for( j = 0; j < (0x2 << (actual_ope - 1)); j++ ){
-            intToBin(j, str, actual_ope);
-            convertBinToOperators(str, actual_ope);
-            if(result == recu(operations, actual_ope-1, str)){
-                printf("%s\n", str);
+        for( j = 0; j < (0x2 << (op_count - 1)); j++ ){
+            intToBin( j, str, op_count );
+            convertBinToOperators( str, op_count );
+            if( result == calcResultRecursion( operations, op_count-1, str ) ){
+                printf( "%s\n", str );
             }
         }
-        if(str) free(str);
+        if( str ) free( str );
     }
 
-    if(operators) free(operators);
-    fclose(fb);
-    if (line) free(line);
-    if (operations) free(operations);
+    if( operators ) free( operators );
+    fclose( fb );
+    if ( line ) free( line );
+    if ( operations ) free( operations );
 
     return EXIT_SUCCESS;
 }
