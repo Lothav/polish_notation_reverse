@@ -14,6 +14,8 @@
 
 int main(int argc, char** argv) {
 
+	(void)argc;
+
     // initialize default values
     FILE* fb = NULL;
     char* line = NULL;
