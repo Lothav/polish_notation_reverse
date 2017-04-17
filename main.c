@@ -74,7 +74,6 @@ int main(int argc, char** argv) {
 
             intToBin( j, str, op_count );
             convertBinToOperators( str, op_count );
-            int res = calcResultRecursion( operations, op_count-1, str );
             if( result == calcResultRecursion( operations, op_count-1, str ) ){
                 printf( "%s\n", str );
             }
