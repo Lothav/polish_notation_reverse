@@ -19,7 +19,7 @@ typedef struct Operation{
 } Operation;
 
 Operation * newOperation(Operation *operations, int op_count, int *id);
-void setNewOperation(int *operators, Operation * operations, int op_count);
+void setNewOperationAsTreeNode(int *operators, Operation * operations, int op_count);
 int calcResultRecursion(Operation * operations, int index, char *str);
 
 #endif //POLISH_NOTATION_REVERSE_OPERATION_H

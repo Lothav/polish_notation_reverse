@@ -19,7 +19,7 @@ Operation * newOperation(Operation *operations, int op_count, int *id){
     return new_op;
 }
 
-void setNewOperation(int *operators, Operation * operations, int op_count){
+void setNewOperationAsTreeNode(int *operators, Operation * operations, int op_count){
     if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
         operations[op_count].ind_a = op_count-1;
         operations[op_count-1].grouped = 1;
