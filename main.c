@@ -12,13 +12,11 @@
 #define G_VALUE -2
 #define OPERATION_MISSING '?'
 
-int main(int argc, char** argv) {
+int main() {
 
-	(void)argc;
 
     // initialize default values
     char * line = malloc(51 * sizeof(int));
-    int line_size = 0;
     char * value = NULL;
 
     // 'operators' is the buffer that will get both numbers from input
@@ -78,6 +76,15 @@ int main(int argc, char** argv) {
         if( str ) free( str );
     }
 
+	if( operations ){
+		free(operations);
+	}
+    if( operators ) {
+        free(operators);
+    }
+    if( line ){
+		free(line);
+	}
 
     return EXIT_SUCCESS;
 }
