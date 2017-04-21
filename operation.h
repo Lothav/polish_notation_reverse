@@ -1,12 +1,8 @@
-//
-// Created by luizorv on 4/15/17.
-//
-
 #ifndef POLISH_NOTATION_REVERSE_OPERATION_H
 #define POLISH_NOTATION_REVERSE_OPERATION_H
 
 #define EMPTY_VALUE -1
-#define G_VALUE -2
+#define GROUP_VALUE -2
 #define OPERATION_PLUS '+'
 
 typedef struct Operation{

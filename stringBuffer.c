@@ -1,11 +1,8 @@
-//
-// Created by luizorv on 4/15/17.
-//
-
 #include "stringBuffer.h"
 
 
 void recoverString(char* str){
+    // find \0 and set with ' '
     int k = 0;
     while( k < MAX_CHAR ){
         if( str[k] == '\0' ){
@@ -16,8 +13,12 @@ void recoverString(char* str){
 }
 
 void setStringBufferWithCustomChars(int *i, char * line){
-    line[*i] = 'G';
+    // set actual '?' character to 'G'
+    line[*i] = GROUP_CHAR;
     (*i)--;
+
+    // now, we need to set last two valid charactes with 'E'
+    // they were grouped in new 'G'
     int j = 2;
     while( j && (*i) >= 0 ){
         if( line[ *i ] != ' ' && line[ *i ] != EMPTY_CHAR ){

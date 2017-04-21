@@ -1,7 +1,3 @@
-//
-// Created by luizorv on 4/15/17.
-//
-
 #include "utils.h"
 
 void convertNumberToOperator(int num, char *str, int op_count) {

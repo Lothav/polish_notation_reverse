@@ -7,9 +7,6 @@
 #include "operation.h"
 #include "stringBuffer.h"
 
-#define EMPTY_CHAR 'E'
-#define EMPTY_VALUE -1
-#define G_VALUE -2
 #define OPERATION_MISSING '?'
 
 int main() {
@@ -63,7 +60,7 @@ int main() {
                 // here, we got a valid character( 'G' or a number )
                 // if is a 'G', set operators(j mod 2) with -2 or with the number
                 // with mod we can get last two
-                operators[valid_chars_counter % 2] = * value == 'G' ? G_VALUE : atoi( value );
+                operators[valid_chars_counter % 2] = * value == GROUP_CHAR ? GROUP_VALUE : atoi( value );
                 // set the jumper with strlen
                 i += strlen( value ) + 1;
                 // increment valid char count

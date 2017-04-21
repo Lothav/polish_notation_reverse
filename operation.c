@@ -1,7 +1,3 @@
-//
-// Created by luizorv on 4/15/17.
-//
-
 #include <stdlib.h>
 #include "operation.h"
 
@@ -20,7 +16,7 @@ Operation * newOperation(Operation *operations, int op_count, int *id){
 }
 
 void setNewOperationAsTreeNode(int *operators, Operation * operations, int op_count){
-    if( operators[0] == G_VALUE && operators[1] == G_VALUE ) {
+    if( operators[0] == GROUP_VALUE && operators[1] == GROUP_VALUE ) {
         operations[op_count].ind_a = op_count-1;
         operations[op_count-1].grouped = 1;
         int op_queued = op_count-2;
@@ -32,14 +28,14 @@ void setNewOperationAsTreeNode(int *operators, Operation * operations, int op_co
             operations[op_queued].grouped = 1;
         }
     } else {
-        if( operators[0] == G_VALUE ){
+        if( operators[0] == GROUP_VALUE ){
             operations[op_count].ind_a = op_count-1;
             operations[op_count-1].grouped = 1;
         } else {
             operations[op_count].a = operators[0];
         }
 
-        if( operators[1] == G_VALUE ){
+        if( operators[1] == GROUP_VALUE ){
             operations[op_count].ind_b = op_count-1;
             operations[op_count-1].grouped = 1;
         } else {
