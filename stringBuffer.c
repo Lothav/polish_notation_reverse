@@ -5,9 +5,9 @@
 #include "stringBuffer.h"
 
 
-void recoverString(char* str, int length){
+void recoverString(char* str){
     int k = 0;
-    while( k < (length-1) ){
+    while( k < MAX_CHAR ){
         if( str[k] == '\0' ){
             str[k] = ' ';
         }

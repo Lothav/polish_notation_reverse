@@ -6,8 +6,9 @@
 #define POLISH_NOTATION_REVERSE_STRINGBUFFER_H
 
 #define EMPTY_CHAR 'E'
+#define MAX_CHAR 201
 
-void recoverString(char *str, int length);
+void recoverString(char *str);
 void setStringBufferWithCustomChars(int *i, char * line);
 
 #endif //POLISH_NOTATION_REVERSE_STRINGBUFFER_H

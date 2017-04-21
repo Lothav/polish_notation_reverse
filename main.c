@@ -15,7 +15,7 @@
 int main() {
 
     // initialize default values
-    char * line = malloc(51 * sizeof( char ));
+    char * line = malloc(MAX_CHAR * sizeof( char ));
     char * value = NULL;
     // 'operators' is the buffer that will get both numbers from input
     int * operators = (int *) malloc(2 * sizeof(int));
@@ -40,7 +40,7 @@ int main() {
 
             if( OPERATION_MISSING  == *value ) {
 
-                recoverString(line, 50);
+                recoverString(line);
 
                 operations = newOperation( operations, op_count, &id );
                 setNewOperation( operators, operations, op_count );
