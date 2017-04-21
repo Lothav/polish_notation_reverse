@@ -12,7 +12,7 @@
 int main() {
 
     // initialize default values
-    char * line = malloc(MAX_CHAR * sizeof( char ));
+    char * line = calloc(MAX_CHAR, sizeof( char ));
     char * value = NULL;
     // string of operators
     char * operators_combinations = NULL;
