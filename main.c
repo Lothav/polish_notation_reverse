@@ -14,11 +14,9 @@
 
 int main() {
 
-
     // initialize default values
     char * line = malloc(51 * sizeof(int));
     char * value = NULL;
-
     // 'operators' is the buffer that will get both numbers from input
     int * operators = (int *) malloc(2 * sizeof(int));
 
@@ -33,6 +31,7 @@ int main() {
     // get first line as char* from file
     if ( strlen(line) ){
 
+        // first principal loop
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
             if( EMPTY_CHAR  == *value ) {
                 i += strlen( value ) + 1;
@@ -64,10 +63,10 @@ int main() {
 
         char *str = (char *) calloc( (size_t) (op_count + 1), sizeof( char ) );
 
+        // second principal loop
         for( j = 0; j < (0x2 << (op_count - 1)); j++ ){
 
             intToBin( j, str, op_count );
-            convertBinToOperators( str, op_count );
             if( result == calcResultRecursion( operations, op_count-1, str ) ){
                 printf( "%s\n", str );
             }
