@@ -15,7 +15,7 @@
 int main() {
 
     // initialize default values
-    char * line = malloc(51 * sizeof(int));
+    char * line = malloc(51 * sizeof( char ));
     char * value = NULL;
     // 'operators' is the buffer that will get both numbers from input
     int * operators = (int *) malloc(2 * sizeof(int));
@@ -47,7 +47,6 @@ int main() {
 
                 op_count++;
 
-
                 setStringBufferWithCustomChars(&i, line);
 
                 value = NULL;
@@ -75,15 +74,11 @@ int main() {
         if( str ) free( str );
     }
 
-	if( operations ){
-		free(operations);
-	}
-    if( operators ) {
-        free(operators);
-    }
-    if( line ){
-		free(line);
-	}
+	if( operations ) free( operations );
+
+    if( operators ) free( operators );
+
+    if( line ) free( line );
 
     return EXIT_SUCCESS;
 }

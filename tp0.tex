@@ -13,15 +13,20 @@
 \maketitle
 
 \section{Introdução}
-There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable.
-There is another theory which states that this has already happened.
-
-\begin{figure}[h!]
-\centering
-\includegraphics[scale=1.7]{universe.jpg}
-\caption{The Universe}
-\label{fig:univerise}
-\end{figure}
+De vasta utilização nas ciências exatas, com destaque para Ciência da Computação, a Notação Polonesa Reversa foi inventada pelo filósofo e cientista da computação australiano Charles Hamblin em meados dos anos 1950, para habilitar armazenamento de memória de endereço zero. Ela deriva da notação polonesa, introduzida em 1920 pelo matemático polonês Jan Łukasiewicz. (Daí o nome sugerido de notação Zciweisakul.) Hamblin apresentou seu trabalho numa conferência em Junho de 1957, e o publicou em 1957 e 1962.
+\\
+\\
+O presente trabalho foi desenvolvido na linguagem C.
+\\
+Para executá-lo, basta utilizar os comandos em um bash/unix:
+\\
+\$ make
+\\
+\$ ./polish\_notation\_reverse
+\\
+\\
+O projeto completo e as etapas do desenvolvimento podem ser encontrados no repositório: \\
+\href{https://github.com/Luiz0tavio/polish\_notation\_reverse}
 
 \section{Implementação}
 \subsection{Estrutura de Dados}
@@ -29,23 +34,32 @@ A estrutura de dados principal para realizar o cálculo escolhida foi uma árvor
 As primeiras operações são armazenadas nas folhas e a última, na raiz.
 
 
-(insira gŕaifco de árvore aqui)
+\begin{figure}[h!]
+\renewcommand{\figurename}{Figura}
+\centering
+\includegraphics[scale=0.5]{tree.png}
+\caption{Árvore binária gerada para 2 2 ? 2 ? 2 ? 2 ?}
+\label{fig:univerise}
+\end{figure}
 
 
 Cada nó da árvore possui um struct o qual contém as propriedades:
 
-id          : contador para identificação do nó.
+\textbf{id}          : contador para identificação do nó.
 
-grouped     : cada nó tem apenas um pai. Essa boolena indica isso.
+\textbf{grouped}     : boolena que indica se o nó foi agrupado.
 
-a           : 
+\textbf{a}           : primeiro número.
 
-b
+\textbf{b}           : segundo número.
 
-ind_a
+\textbf{ind\_a}      : índice para o primeiro filho.
 
-ind_b
-
+\textbf{ind\_b}      : índice para o segundo filho.
+\\
+\\
+Os índices descritos acima referem-se à um array que armazena os structs. A árvore é montada apenas com um elemento fazendo referência ao outro.
+A escolha da utilização de índices e não posições de memória é devido à utilização de \textbf{realloc} (o qual move todo o conteúdo de lugar na memória e da free na memória antiga, logo, seria necessário atualizar cada endereço após o realloc o que seria muito custoso).
 
 \subsection{Construção da Árvore}
 Para a construção da árvore é utilizado um array principal em conjunto com a string de entrada.
@@ -54,8 +68,8 @@ A string é lida e cada caracter válido é armazenado em um array de duas posi�
 \\
 \\
 Caso o array contenha:
-\begin{list_type}  
-\item 2 números, será gerado uma nova folha. 
+\begin{list_type}
+\item 2 números, será gerado uma nova folha.
 \item 2 'G's, será gerado um nó com dois sub-nós (a função dos caracters 'G' e 'E' será explicada à frente).
 \item 1 'G' e um número, será gerado um nó apontando para um sub-nó e para o número.
 \end{list_type}
@@ -93,7 +107,7 @@ Utilizando o exemplo(reduzido) da documentação:\\ \\
  E E G E E E E E E G ?\par
 }
 
-aqui, os dois últimos 'G's são agrupados em um novo 'G'.
+aqui, os dois últimos 'G's são agrupados em um novo 'G' que será a raiz.
 \\
 \\
 A última iteração irá agrupar os últimos 2 'G' e a string estará completa com 'E's.
@@ -120,9 +134,9 @@ então, os zeros são substituidos por '+' e os uns por '*'. Assim, a prioridade
 
 \subsection{Cálculo}
 Para cada um dos grupos de operadores gerados, é feita uma busca em profundidade recursiva: as operações são aplicadas das folhas até a raiz.
-Os operadores são passados em cada recursão, de um a um, começando do último até o primeiro.
+Os operadores são passados em cada recursão, um a um, começando do último até o primeiro.
 
-Após a recursão terminar, será retornado um valor. Caso seja igual ao passado na entrada, exibe a sequência de operadores. Caso contrário, continua para a próxima sequência.
+Após a recursão terminar, será retornado um valor. Caso seja igual ao passado na segunda linha da entrada, exibe a sequência de operadores. Caso contrário, continua para a próxima sequência.
 
 
 \section{Estrutura do Projeto}
@@ -140,6 +154,22 @@ Também é onde está a função recursiva que irá apresentar o resultado.
 \subsection{stringBuffer.h / stringBuffer.c}
 Responsável por executar operações com strings
 
+\section{Análise Assintótica}
+No desenvolvimento encontramos 2 loops principais: o primeiro, para manipular a string de entrada e gerar a árvore e o segundo, para fazer o cálculo e escrever na tela.
+\\
+\\
+No primeiro loop principal temos a complexidade \textbf{$\theta$(n)} com limite assintótico firme em n, onde n é o número de caracteres não vazios da string, pois, será lidos e processados um a um.
+\\
+\\
+No segundo loop temos $2^m$ operações, onde m é o número de caracteres '?' da entrada.
+\\
+Dentro, temos uma chamada de função que converterá o índice atual do loop em uma sequencia de '+'s e '*'s de tamanho m.
+\\
+Por fim, fazemos a chamada recursiva na árvore. O custo de operações numa árvore aleatoriamente distribuída é O(log m), e no pior caso O(m)
+\\
+\\
+Podemos então concluir que, no caso médio, o algorítmo tem um comportamento assintótico O( n + $2^m$ m log m ) e no pior caso, O( n + $2^m$ $m^2$ )
+
 \section{Conclusão}
 
 \begin{list_type}
@@ -147,11 +177,11 @@ Responsável por executar operações com strings
 A notação polonesa reversa se mostra como uma grande aliada na computação. Entre suas vantagens, podemos citar:
 \\
     \item Reduz o número de passos lógicos para se perfazerem operações binárias e, posto que as demais operações são ou binárias puras compostas, ou binárias compostas com unitárias ou apenas unitárias, o número total de passos lógicos necessários a um determinado cômputo será sempre menor que aquele que utiliza a sintaxe convencional (lógica algébrica direta);    \citep{adams1995hitchhiker}
-    
+
     \item Trabalha com pares ordenados a priori, somente definindo a lei de composição binária aplicável após a eleição e a introdução do desejado par no cenário de cálculo. Até o momento final, se poderá decidir pela troca ou pela permanência da operação original.   \citep{adams1995hitchhiker}
-    
+
     \item Minimiza os erros de computação, automática ou manual assistida;   \citep{adams1995hitchhiker}
-    
+
     \item Maximiza a velocidade operacional na solução de problemas.   \citep{adams1995hitchhiker}
 \\
 \\
