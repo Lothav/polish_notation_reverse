@@ -1,0 +1,167 @@
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+
+\title{Notação Polonesa Reversa}
+\author{Luiz Otávio Resende Vasconcelos}
+\date{Abril 2017}
+
+\usepackage{natbib}
+\usepackage{graphicx}
+
+\begin{document}
+
+\maketitle
+
+\section{Introdução}
+There is a theory which states that if ever anyone discovers exactly what the Universe is for and why it is here, it will instantly disappear and be replaced by something even more bizarre and inexplicable.
+There is another theory which states that this has already happened.
+
+\begin{figure}[h!]
+\centering
+\includegraphics[scale=1.7]{universe.jpg}
+\caption{The Universe}
+\label{fig:univerise}
+\end{figure}
+
+\section{Implementação}
+\subsection{Estrutura de Dados}
+A estrutura de dados principal para realizar o cálculo escolhida foi uma árvore binária.
+As primeiras operações são armazenadas nas folhas e a última, na raiz.
+
+
+(insira gŕaifco de árvore aqui)
+
+
+Cada nó da árvore possui um struct o qual contém as propriedades:
+
+id          : contador para identificação do nó.
+
+grouped     : cada nó tem apenas um pai. Essa boolena indica isso.
+
+a           : 
+
+b
+
+ind_a
+
+ind_b
+
+
+\subsection{Construção da Árvore}
+Para a construção da árvore é utilizado um array principal em conjunto com a string de entrada.
+
+A string é lida e cada caracter válido é armazenado em um array de duas posições - cada inserção é feita com mod 2 - até ser encontrado um '?'(operação perdida). Então, temos um array com os dois últimos caracteres válidos. Esse array irá gerar uma nova estrutura de dados.
+\\
+\\
+Caso o array contenha:
+\begin{list_type}  
+\item 2 números, será gerado uma nova folha. 
+\item 2 'G's, será gerado um nó com dois sub-nós (a função dos caracters 'G' e 'E' será explicada à frente).
+\item 1 'G' e um número, será gerado um nó apontando para um sub-nó e para o número.
+\end{list_type}
+\\
+\\
+Após gerado, uma modificação na string original é necessária para que ela possa ser reutilizada.
+
+O caractere '?' é substituído por um 'G' (o que significa que aqueles operadores foram agrupados em uma nova estrutura de dados). Os operadores utilizados são trocados por 'E' (caractere escolhido para ser ínválido).
+\\
+\\
+Ex.:
+Utilizando o exemplo(reduzido) da documentação:\\ \\
+{\centering
+ 2 2 ? 2 2 ? 2 2 ? ? ?\par
+}\\
+1ª iteração:
+
+{\centering
+ E E G 2 2 ? 2 2 ? ? ?\par
+}
+2ª iteração:
+
+{\centering
+ E E G E E G 2 2 ? ? ?\par
+}
+3ª iteração:
+
+{\centering
+ E E G E E G E E G ? ?\par
+}
+
+4ª iteração:
+
+{\centering
+ E E G E E E E E E G ?\par
+}
+
+aqui, os dois últimos 'G's são agrupados em um novo 'G'.
+\\
+\\
+A última iteração irá agrupar os últimos 2 'G' e a string estará completa com 'E's.
+
+\subsection{Operações}
+São possíveis $2^n$ operações para cada entrada, onde n é a quantidade de '?'(operações perdidas) presentes na string de entrada.
+Para gerar as $2^n$ é feita uma máscara de bits.
+
+Ex: para n = 2
+
+{\centering
+  00\par
+}
+{\centering
+  01\par
+}
+{\centering
+  10\par
+}
+{\centering
+  11\par
+}
+então, os zeros são substituidos por '+' e os uns por '*'. Assim, a prioridade para os operadores '+' já é sanada.
+
+\subsection{Cálculo}
+Para cada um dos grupos de operadores gerados, é feita uma busca em profundidade recursiva: as operações são aplicadas das folhas até a raiz.
+Os operadores são passados em cada recursão, de um a um, começando do último até o primeiro.
+
+Após a recursão terminar, será retornado um valor. Caso seja igual ao passado na entrada, exibe a sequência de operadores. Caso contrário, continua para a próxima sequência.
+
+
+\section{Estrutura do Projeto}
+
+Apesar do código estar bem comentado, segue uma breve exposição de como o projeto está particionado.
+
+\subsection{main.c}
+Arquivo principal do projeto. Inicializa as varíaveis, faz a leitura das entradas, faz a chamada das principais funções e exibe o resultado.
+
+\subsection{operation.h / operation.c}
+Responsável por criar e realizar operações com a estrutura de dados componente de cada nó da árvore.
+
+Também é onde está a função recursiva que irá apresentar o resultado.
+
+\subsection{stringBuffer.h / stringBuffer.c}
+Responsável por executar operações com strings
+
+\section{Conclusão}
+
+\begin{list_type}
+\item
+A notação polonesa reversa se mostra como uma grande aliada na computação. Entre suas vantagens, podemos citar:
+\\
+    \item Reduz o número de passos lógicos para se perfazerem operações binárias e, posto que as demais operações são ou binárias puras compostas, ou binárias compostas com unitárias ou apenas unitárias, o número total de passos lógicos necessários a um determinado cômputo será sempre menor que aquele que utiliza a sintaxe convencional (lógica algébrica direta);    \citep{adams1995hitchhiker}
+    
+    \item Trabalha com pares ordenados a priori, somente definindo a lei de composição binária aplicável após a eleição e a introdução do desejado par no cenário de cálculo. Até o momento final, se poderá decidir pela troca ou pela permanência da operação original.   \citep{adams1995hitchhiker}
+    
+    \item Minimiza os erros de computação, automática ou manual assistida;   \citep{adams1995hitchhiker}
+    
+    \item Maximiza a velocidade operacional na solução de problemas.   \citep{adams1995hitchhiker}
+\\
+\\
+\\
+Apesar da abordagem com pilha ser mais eficiente, a escolha da árvore binária mostrou grande desempenho e facilidade na implementação.
+\end{list_type}
+
+
+
+
+\bibliographystyle{plain}
+\bibliography{references}
+\end{document}
