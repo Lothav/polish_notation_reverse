@@ -152,13 +152,14 @@ Responsável por criar e realizar operações com a estrutura de dados component
 Também é onde está a função recursiva que irá apresentar o resultado.
 
 \subsection{stringBuffer.h / stringBuffer.c}
-Responsável por executar operações com strings
+Responsável por executar operações com a string de entrada que é utilizada para montar a árvore.
 
 \section{Análise Assintótica}
+\subsection{Temporal}
 No desenvolvimento encontramos 2 loops principais: o primeiro, para manipular a string de entrada e gerar a árvore e o segundo, para fazer o cálculo e escrever na tela.
 \\
 \\
-No primeiro loop principal temos a complexidade \textbf{$\theta$(n)} com limite assintótico firme em n, onde n é o número de caracteres não vazios da string, pois, será lidos e processados um a um.
+No primeiro loop principal temos a complexidade \textbf{$\theta$(n)} com limite assintótico firme em n, onde n é o número de caracteres não vazios da string, pois, será lidos e processados um a um. Há outros outros loops dentro, porém, de limite constante e portanto desprezível.
 \\
 \\
 No segundo loop temos $2^m$ operações, onde m é o número de caracteres '?' da entrada.
@@ -170,28 +171,46 @@ Por fim, fazemos a chamada recursiva na árvore. O custo de operações numa ár
 \\
 Podemos então concluir que, no caso médio, o algorítmo tem um comportamento assintótico O( n + $2^m$ m log m ) e no pior caso, O( n + $2^m$ $m^2$ )
 
+\subsection{Espacial}
+
+Para a entrada alocamos 51 bytes, para os operadores 16 bytes. Então, temos 5 int's auxiliares que nos custam 40 bytes. Para cada caractere '?' geramos um nó da árvore de tamanho 24 bytes
+\\
+\\
+Podemos então concluir que temos um custo de espaço total de \textbf{(91 + m * 24) bytes}
+
+\section{Avaliação Experimental}
+Foram gerados casos de teste limitando os 200 caracteres.
+\\
+Geramos um casos de teste de 0 a 26 operadores. O tempo de execução por caso de teste é mostrado na Figura 2.
+\begin{figure}[h!]
+\renewcommand{\figurename}{Figura}
+\centering
+\includegraphics[scale=0.5]{execucao.png}
+\caption{Gráfico Operações / Tempo de execução}
+\label{fig:univerise}
+\end{figure}
+Como previsto na análise assintótica temporal, com a complexidade O( n + $2^m$ m log m ), enquanto m é pequeno (no gráfico até cerca de 18), ela se comporta com crescimento linear, ou seja O(n). Passando de um certo ponto, nesse caso cerca de 18, a função exponencial a supera e então, apresenta um crescimento exponencial.
+
 \section{Conclusão}
 
 \begin{list_type}
 \item
 A notação polonesa reversa se mostra como uma grande aliada na computação. Entre suas vantagens, podemos citar:
 \\
-    \item Reduz o número de passos lógicos para se perfazerem operações binárias e, posto que as demais operações são ou binárias puras compostas, ou binárias compostas com unitárias ou apenas unitárias, o número total de passos lógicos necessários a um determinado cômputo será sempre menor que aquele que utiliza a sintaxe convencional (lógica algébrica direta);    \citep{adams1995hitchhiker}
 
-    \item Trabalha com pares ordenados a priori, somente definindo a lei de composição binária aplicável após a eleição e a introdução do desejado par no cenário de cálculo. Até o momento final, se poderá decidir pela troca ou pela permanência da operação original.   \citep{adams1995hitchhiker}
+\begin{enumerate}
+    \item Reduz o número de passos lógicos para se perfazerem operações binárias e, posto que as demais operações são ou binárias puras compostas, ou binárias compostas com unitárias ou apenas unitárias, o número total de passos lógicos necessários a um determinado cômputo será sempre menor que aquele que utiliza a sintaxe convencional (lógica algébrica direta)
 
-    \item Minimiza os erros de computação, automática ou manual assistida;   \citep{adams1995hitchhiker}
+    \item Trabalha com pares ordenados a priori, somente definindo a lei de composição binária aplicável após a eleição e a introdução do desejado par no cenário de cálculo. Até o momento final, se poderá decidir pela troca ou pela permanência da operação original.
 
-    \item Maximiza a velocidade operacional na solução de problemas.   \citep{adams1995hitchhiker}
-\\
+    \item  Minimiza os erros de computação, automática ou manual assistida;
+
+    \item  Maximiza a velocidade operacional na solução de problemas.
+
+\end{enumerate}
 \\
 \\
 Apesar da abordagem com pilha ser mais eficiente, a escolha da árvore binária mostrou grande desempenho e facilidade na implementação.
 \end{list_type}
 
-
-
-
-\bibliographystyle{plain}
-\bibliography{references}
 \end{document}
