@@ -7,7 +7,7 @@
 
 #define EMPTY_CHAR 'E'
 
-void recoverString(char* str, int length);
+void recoverString(char *str, int length);
 void setStringBufferWithCustomChars(int *i, char * line);
 
 #endif //POLISH_NOTATION_REVERSE_STRINGBUFFER_H

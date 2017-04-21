@@ -17,9 +17,7 @@ int main(int argc, char** argv) {
 	(void)argc;
 
     // initialize default values
-    FILE* fb = NULL;
-    char* line = NULL;
-    size_t len = 0;
+    char * line = malloc(51 * sizeof(int));
     int line_size = 0;
     char * value = NULL;
 
@@ -30,13 +28,12 @@ int main(int argc, char** argv) {
     Operation* operations = NULL;
 
     // initialize counter variables
-    int i = 0, j = 0, id = 0, op_count = 0;
+    int i = 0, j = 0, id = 0, op_count = 0, result;
 
-    fb = fopen(argv[1], "r");
-    if ( NULL == fb ) exit(EXIT_FAILURE);
+	scanf("%[^\n]s", line);
 
     // get first line as char* from file
-    if ( -1 != (line_size = (int) getline(&line, &len, fb)) ){
+    if ( strlen(line) ){
 
         while( NULL != (value = strtok(NULL == value ? line : NULL, " \n")) ){
             if( EMPTY_CHAR  == *value ) {
@@ -46,7 +43,7 @@ int main(int argc, char** argv) {
 
             if( OPERATION_MISSING  == *value ) {
 
-                recoverString(line, line_size);
+                recoverString(line, 50);
 
                 operations = newOperation( operations, op_count, &id );
                 setNewOperation( operators, operations, op_count );
@@ -65,9 +62,8 @@ int main(int argc, char** argv) {
             }
         }
 
-        getline( &line, &len, fb );
+		scanf("%d", &result);
 
-        int result = atoi(line);
         char *str = (char *) calloc( (size_t) (op_count + 1), sizeof( char ) );
 
         for( j = 0; j < (0x2 << (op_count - 1)); j++ ){
@@ -82,10 +78,6 @@ int main(int argc, char** argv) {
         if( str ) free( str );
     }
 
-    if( operators ) free( operators );
-    fclose( fb );
-    if ( line ) free( line );
-    if ( operations ) free( operations );
 
     return EXIT_SUCCESS;
 }
